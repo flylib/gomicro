@@ -1,7 +1,5 @@
 package grpc
 
-import "github.com/zjllib/go-micro/transport"
-
 type OptionFun func(o *Option)
 
 //options
@@ -12,8 +10,6 @@ type Option struct {
 	version string
 	//
 	address string
-
-	transport transport.ITransport
 }
 
 func Name(name string) OptionFun {
