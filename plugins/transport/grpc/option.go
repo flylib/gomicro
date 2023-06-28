@@ -6,8 +6,6 @@ type OptionFun func(o *Option)
 type Option struct {
 	//service name
 	serviceName string
-	//version
-	version string
 	//
 	address string
 }
@@ -15,12 +13,6 @@ type Option struct {
 func Name(name string) OptionFun {
 	return func(o *Option) {
 		o.serviceName = name
-	}
-}
-
-func Version(version string) OptionFun {
-	return func(o *Option) {
-		o.version = version
 	}
 }
 

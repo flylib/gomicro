@@ -29,25 +29,25 @@ type IService interface {
 }
 
 type Service struct {
-	opt Option
+	Option
 }
 
 func (self *Service) Name() string {
-	return self.opt.serviceName
+	return self.serviceName
 }
 
 func (self *Service) Start() error {
-	return self.opt.transport.Server().Listen()
+	return self.transport.Server().Start()
 }
 
 func (self *Service) Stop() error {
-	return self.opt.transport.Server().Stop()
+	return self.transport.Server().Stop()
 }
 
 func (self *Service) Server() transport.IServer {
-	return self.opt.transport.Server()
+	return self.transport.Server()
 }
 
 func (self *Service) Client() transport.IClient {
-	return self.opt.transport.Client()
+	return self.transport.Client()
 }

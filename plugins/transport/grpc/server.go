@@ -13,18 +13,18 @@ type server struct {
 }
 
 
-func (self *server) Listen() error {
+func (self *server) Start() error {
 	listener, err := net.Listen("tcp", self.opt.address)
 	if err != nil {
 		return err
 	}
-	self.grpcServer = grpc.NewServer(
-		grpc.StatsHandler(&handler.StatsHandler{})) //创建gRPC服务
+	self.grpcServer = grpc.NewServer(grpc.StatsHandler(&handler.StatsHandler{})) //创建gRPC服务
 	/**注册接口服务
 	 * 以定义proto时的service为单位注册，服务中可以有多个方法
 	 * (proto编译时会为每个service生成Register***Server方法)
 	 * 包.注册服务方法(gRpc服务实例，包含接口方法的结构体[指针])
 	 */
+
 	//proto.RegisterWaiterServer(grpcServer, &server{})
 	/**如果有可以注册多个接口服务,结构体要实现对应的接口方法
 	 * user.RegisterLoginServer(s, &server{})

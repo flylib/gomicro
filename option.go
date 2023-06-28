@@ -33,3 +33,9 @@ func Address(addr string) OptionFun {
 		o.address = addr
 	}
 }
+
+func Transport(t transport.ITransport) OptionFun {
+	return func(o *Option) {
+		o.transport = t
+	}
+}

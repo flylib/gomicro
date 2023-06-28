@@ -7,6 +7,6 @@ func NewService(opts ...OptionFun) IService {
 	}
 
 	return &Service{
-		opt: opt,
+		opt,
 	}
 }
