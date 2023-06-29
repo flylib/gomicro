@@ -1,4 +1,4 @@
-package hello
+package main
 
 import (
 	"github.com/zjllib/go-micro"
@@ -6,9 +6,11 @@ import (
 )
 
 func main() {
+	transport := grpc.NewTransport(
+		grpc.Address(":8099"))
+
 	service := micro.NewService(
-		micro.Address(":8099"),
-		micro.Transport(grpc.NewTransport()),
+		micro.Transport(transport),
 	)
 	service.Start()
 }
