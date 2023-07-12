@@ -1,7 +1,5 @@
 package micro
 
-import "github.com/zjllib/go-micro/transport"
-
 type OptionFun func(o *Option)
 
 //options
@@ -13,7 +11,7 @@ type Option struct {
 	//
 	address string
 
-	transport transport.ITransport
+	transport ITransport
 }
 
 func Name(name string) OptionFun {
@@ -34,7 +32,7 @@ func Address(addr string) OptionFun {
 	}
 }
 
-func Transport(t transport.ITransport) OptionFun {
+func Transport(t ITransport) OptionFun {
 	return func(o *Option) {
 		o.transport = t
 	}

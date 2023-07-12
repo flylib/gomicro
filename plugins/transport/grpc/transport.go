@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/zjllib/go-micro/transport"
+	 "github.com/zjllib/go-micro"
 )
 
 type grpcTransport struct {
@@ -9,7 +9,7 @@ type grpcTransport struct {
 	c *client
 }
 
-func NewTransport(opts ...OptionFun) transport.ITransport {
+func NewTransport(opts ...OptionFun) micro.ITransport {
 	var options Option
 	for _, o := range opts {
 		o(&options)
@@ -21,10 +21,10 @@ func NewTransport(opts ...OptionFun) transport.ITransport {
 
 
 
-func (self grpcTransport) Server() transport.IServer {
+func (self grpcTransport) Server() micro.IServer {
 	return self.s
 }
 
-func (self grpcTransport) Client() transport.IClient {
+func (self grpcTransport) Client() micro.IClient {
 	return self.c
 }
