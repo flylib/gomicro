@@ -5,30 +5,30 @@ type OptionFun func(o *Option)
 //options
 type Option struct {
 	//service name
-	serviceName string
-	//version
-	version string
+	ServiceName string
+	//Version
+	Version string
 	//
-	address string
+	Address string
 
 	transport ITransport
 }
 
 func Name(name string) OptionFun {
 	return func(o *Option) {
-		o.serviceName = name
+		o.ServiceName = name
 	}
 }
 
 func Version(version string) OptionFun {
 	return func(o *Option) {
-		o.version = version
+		o.Version = version
 	}
 }
 
 func Address(addr string) OptionFun {
 	return func(o *Option) {
-		o.address = addr
+		o.Address = addr
 	}
 }
 

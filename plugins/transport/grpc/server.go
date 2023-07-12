@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	. "github.com/zjllib/go-micro"
 	"github.com/zjllib/go-micro/plugins/transport/grpc/handler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,7 +15,7 @@ type server struct {
 
 
 func (self *server) Start() error {
-	listener, err := net.Listen("tcp", self.opt.address)
+	listener, err := net.Listen("tcp", self.opt.Address)
 	if err != nil {
 		return err
 	}
@@ -42,5 +43,5 @@ func (self *server) Stop() error {
 	return nil
 }
 func (self *server) Addr() string {
-	return self.opt.address
+	return self.opt.Address
 }

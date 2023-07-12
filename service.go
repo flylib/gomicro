@@ -12,12 +12,26 @@ package micro
 +---------------------------------------------------+
 */
 
+func NewService(opts ...OptionFun) Service {
+	opt := Option{}
+	for _, f := range opts {
+		f(&opt)
+	}
+
+	if opt.transport != nil {
+		opt.transport.Init(opts...)
+	}
+	return Service{
+		opt,
+	}
+}
+
 type Service struct {
 	Option
 }
 
 func (self *Service) Name() string {
-	return self.serviceName
+	return self.ServiceName
 }
 
 func (self *Service) Start() error {

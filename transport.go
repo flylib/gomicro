@@ -40,6 +40,7 @@ type IServer interface {
 }
 
 type ITransport interface {
+	Init(...OptionFun) error
 	Server() IServer
 	Client() IClient
 }

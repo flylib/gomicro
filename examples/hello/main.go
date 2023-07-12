@@ -6,10 +6,9 @@ import (
 )
 
 func main() {
-	transport := grpc.NewTransport(grpc.Address(":8099"))
-
 	service := micro.NewService(
-		micro.Transport(transport),
+		micro.Address(":8099"),
+		micro.Transport(grpc.NewTransport()),
 	)
 	service.Start()
 }
