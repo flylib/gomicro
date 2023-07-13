@@ -1,6 +1,6 @@
 package micro
 
-type Registry interface {
+type IRegistry interface {
 	Register(*Service) error
 	Deregister(*Service) error
 	GetService(string) ([]*Service, error)

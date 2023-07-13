@@ -18,8 +18,8 @@ func NewService(opts ...OptionFun) Service {
 		f(&opt)
 	}
 
-	if opt.transport != nil {
-		opt.transport.Init(opts...)
+	if opt.Transport.ITransport != nil {
+		opt.Transport.Init(opts...)
 	}
 	return Service{
 		opt,
@@ -31,13 +31,13 @@ type Service struct {
 }
 
 func (self *Service) Name() string {
-	return self.ServiceName
+	return self.Name
 }
 
 func (self *Service) Start() error {
-	return self.transport.Server().Start()
+	return self.Transport.Server().Start()
 }
 
 func (self *Service) Stop() error {
-	return self.transport.Server().Stop()
+	return self.Transport.Server().Stop()
 }

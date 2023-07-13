@@ -1,22 +1,40 @@
 package micro
 
+import "time"
+
 type OptionFun func(o *Option)
 
 //options
-type Option struct {
-	//service name
-	ServiceName string
-	//Version
-	Version string
-	//
-	Address string
+type (
+	Option struct {
+		//service name
+		Name string
+		//Version
+		Version string
 
-	transport ITransport
-}
+		TransportOption
+		RegistryOption
+	}
+	// RegistryOption Registry
+	RegistryOption struct {
+		IRegistry
+		Address []string
+		// The register expiry time
+		RegisterTTL time.Duration
+		// The interval on which to register
+		RegisterInterval time.Duration
+	}
+
+	// TransportOption Transport
+	TransportOption struct {
+		ITransport
+		Address string
+	}
+)
 
 func Name(name string) OptionFun {
 	return func(o *Option) {
-		o.ServiceName = name
+		o.Name = name
 	}
 }
 
@@ -28,12 +46,32 @@ func Version(version string) OptionFun {
 
 func Address(addr string) OptionFun {
 	return func(o *Option) {
-		o.Address = addr
+		o.TransportOption.Address = addr
 	}
 }
 
-func Transport(t ITransport) OptionFun {
+func Transport(transport ITransport) OptionFun {
 	return func(o *Option) {
-		o.transport = t
+		o.ITransport = transport
+	}
+}
+
+func Registry(registry IRegistry) OptionFun {
+	return func(o *Option) {
+		o.IRegistry = registry
+	}
+}
+
+// Register the service with a TTL
+func RegisterTTL(t time.Duration) OptionFun {
+	return func(o *Option) {
+		o.RegisterTTL = t
+	}
+}
+
+// Register the service with at interval
+func RegisterInterval(t time.Duration) OptionFun {
+	return func(o *Option) {
+		o.RegisterInterval = t
 	}
 }
