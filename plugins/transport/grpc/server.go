@@ -1,25 +1,22 @@
 package grpc
 
 import (
-	. "github.com/zjllib/go-micro"
-	"github.com/zjllib/go-micro/plugins/transport/grpc/handler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
 )
 
 type server struct {
-	opt        Option
+	opt        option
 	grpcServer *grpc.Server
 }
 
-
 func (self *server) Start() error {
-	listener, err := net.Listen("tcp", self.opt.Address)
+	ln, err := net.Listen("tcp", self.opt.addres)
 	if err != nil {
 		return err
 	}
-	self.grpcServer = grpc.NewServer(grpc.StatsHandler(&handler.StatsHandler{})) //创建gRPC服务
+	self.grpcServer = grpc.NewServer(grpc.StatsHandler(&StatsHandler{})) //创建gRPC服务
 	/**注册接口服务
 	 * 以定义proto时的service为单位注册，服务中可以有多个方法
 	 * (proto编译时会为每个service生成Register***Server方法)
@@ -34,7 +31,7 @@ func (self *server) Start() error {
 	// 在gRPC服务器上注册反射服务
 	reflection.Register(self.grpcServer)
 	// 将监听交给gRPC服务处理
-	err = self.grpcServer.Serve(listener)
+	err = self.grpcServer.Serve(ln)
 	return err
 }
 
@@ -42,6 +39,7 @@ func (self *server) Stop() error {
 	self.grpcServer.Stop()
 	return nil
 }
+
 func (self *server) Addr() string {
-	return self.opt.Address
+	return self.opt.addres
 }

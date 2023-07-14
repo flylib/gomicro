@@ -18,9 +18,9 @@ func NewService(opts ...OptionFun) Service {
 		f(&opt)
 	}
 
-	if opt.Transport.ITransport != nil {
-		opt.Transport.Init(opts...)
-	}
+	//if opt.Transport.ITransport != nil {
+	//	opt.Transport.Init(opts...)
+	//}
 	return Service{
 		opt,
 	}
@@ -31,13 +31,17 @@ type Service struct {
 }
 
 func (self *Service) Name() string {
-	return self.Name
+	return self.Option.Name
 }
 
 func (self *Service) Start() error {
-	return self.Transport.Server().Start()
+	return self.ITransport.Server().Start()
 }
 
 func (self *Service) Stop() error {
-	return self.Transport.Server().Stop()
+	err := self.IRegistry.Register(self)
+	if err != nil {
+		return err
+	}
+	return self.ITransport.Server().Stop()
 }

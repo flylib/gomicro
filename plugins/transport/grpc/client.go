@@ -10,12 +10,12 @@ import (
 //}
 
 type client struct {
-	opt  Option
+	opt  option
 	conn *grpc.ClientConn
 }
 
 func (self client) Dial() error {
-	dial, err := grpc.Dial(self.opt.address)
+	dial, err := grpc.Dial(self.opt.addres)
 	if err != nil {
 		return err
 	}

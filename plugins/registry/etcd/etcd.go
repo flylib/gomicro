@@ -3,7 +3,7 @@ package etcd
 import (
 	"context"
 	"fmt"
-	. "github.com/zjllib/go-micro"
+	"github.com/zjllib/go-micro"
 	"go.etcd.io/etcd/client/v3"
 	"time"
 )
@@ -16,14 +16,14 @@ type etcd struct {
 	canclefunc    func()
 }
 
-func NewRegistry(opts ...OptionFun) IRegistry {
-	var options Option
+func NewRegistry(opts ...Option) micro.IRegistry {
+	var options option
 	for _, o := range opts {
 		o(&options)
 	}
 
 	conf := clientv3.Config{
-		Endpoints:   options.RegistryOption.Address,
+		Endpoints:   options.address,
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -34,7 +34,7 @@ func NewRegistry(opts ...OptionFun) IRegistry {
 	registry := etcd{
 		client: c,
 	}
-	registry.setLease(int64(options.RegisterTTL.Seconds()))
+	registry.setLease(int64(options.registerttl.Seconds()))
 	go registry.ListenLeaseRespChan()
 	return &registry
 }
@@ -80,23 +80,23 @@ func (self *etcd) ListenLeaseRespChan() {
 	}
 }
 
-func (self *etcd) Register(service *Service) error {
+func (self *etcd) Register(service *micro.Service) error {
 	kv := clientv3.NewKV(self.client)
 	_, err := kv.Put(context.TODO(), service.Option.Name, service.ITransport.Server().Addr(), clientv3.WithLease(self.leaseResp.ID))
 	return err
 }
 
-func (self *etcd) Deregister(service *Service) error {
+func (self *etcd) Deregister(service *micro.Service) error {
 	kv := clientv3.NewKV(self.client)
 	response, err := kv.Delete(context.Background(), service.Option.Name)
 	fmt.Println(*response)
 	return err
 }
 
-func (self *etcd) GetService(s string) ([]*Service, error) {
+func (self *etcd) GetService(s string) ([]*micro.Service, error) {
 	panic("implement me")
 }
 
-func (self *etcd) ListServices() ([]*Service, error) {
+func (self *etcd) ListServices() ([]*micro.Service, error) {
 	panic("implement me")
 }
