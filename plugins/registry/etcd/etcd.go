@@ -2,9 +2,14 @@ package etcd
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"github.com/zjllib/go-micro"
+	"github.com/zjllib/goutils/net"
 	"go.etcd.io/etcd/client/v3"
+	"strings"
 	"time"
 )
 
@@ -82,7 +87,30 @@ func (self *etcd) ListenLeaseRespChan() {
 
 func (self *etcd) Register(service *micro.Service) error {
 	kv := clientv3.NewKV(self.client)
-	_, err := kv.Put(context.TODO(), service.Option.Name, service.ITransport.Server().Addr(), clientv3.WithLease(self.leaseResp.ID))
+	addr := service.RegistryAddress
+	if addr == "" {
+		splits := strings.Split(service.ITransport.Server().Addr(), ":")
+		if len(splits) != 2 {
+			return errors.New("bad addr:" + addr)
+		}
+		//Get LAN address
+		ip, err := net.GetOutboundIP()
+		if err != nil {
+			return err
+		}
+		addr = ip.String() + ":" + splits[1]
+	}
+
+	node := micro.Node{
+		Name:    service.Name() + "-" + uuid.NewV4().String(),
+		Version: service.Version,
+		Address: addr,
+	}
+	marshal, err := json.Marshal(node)
+	if err != nil {
+		return err
+	}
+	_, err = kv.Put(context.TODO(), micro.RegistryPrefix+service.Option.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
 	return err
 }
 

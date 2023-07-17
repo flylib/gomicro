@@ -35,13 +35,14 @@ func (self *Service) Name() string {
 }
 
 func (self *Service) Start() error {
-	return self.ITransport.Server().Start()
-}
-
-func (self *Service) Stop() error {
 	err := self.IRegistry.Register(self)
 	if err != nil {
 		return err
 	}
+	return self.ITransport.Server().Start()
+}
+
+func (self *Service) Stop() error {
+
 	return self.ITransport.Server().Stop()
 }
