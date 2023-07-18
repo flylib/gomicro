@@ -1,5 +1,7 @@
 package grpc
 
+import "sync"
+
 type Option func(o *option)
 
 //type Register struct {
@@ -9,7 +11,7 @@ type Option func(o *option)
 
 type option struct {
 	address          string
-	registerHandlers map[interface{}]interface{}
+	registerHandlers sync.Map
 }
 
 func Address(address string) Option {
@@ -20,6 +22,6 @@ func Address(address string) Option {
 
 func M(registerFun, handler interface{}) Option {
 	return func(o *option) {
-		o.registerHandlers[handler] = registerFun
+		o.registerHandlers.Store(handler, registerFun)
 	}
 }

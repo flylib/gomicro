@@ -2,13 +2,11 @@ module github.com/zjllib/go-micro/plugins/registry/etcd
 
 go 1.17
 
-require (
-	github.com/zjllib/go-micro v1.18.0
-	github.com/zjllib/goutils v1.0.15-0.20230717032249-1bb6c05812a7
-	go.etcd.io/etcd/client/v3 v3.5.9
-)
 
 require (
+	github.com/zjllib/go-micro v0.0.0-20230717035846-7d40414eaab8
+	github.com/zjllib/goutils v1.0.15-0.20230717032249-1bb6c05812a7
+	go.etcd.io/etcd/client/v3 v3.5.9
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

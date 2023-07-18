@@ -29,10 +29,11 @@ func (self *server) Start() error {
 	 * user.RegisterLoginServer(s, &server{})
 	 * minMovie.RegisterFbiServer(s, &server{})
 	 */
-	for handler, f := range self.opt.registerHandlers {
+
+	self.opt.registerHandlers.Range(func(handler, f interface{}) bool {
 		reflect.ValueOf(f).Call([]reflect.Value{reflect.ValueOf(self.grpcServer), reflect.ValueOf(handler)})
-		//f(self.grpcServer)
-	}
+		return true
+	})
 
 	reflection.Register(self.grpcServer)
 	// 将监听交给gRPC服务处理

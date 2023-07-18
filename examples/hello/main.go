@@ -21,6 +21,7 @@ func main() {
 	)
 
 	service := micro.NewService(
+		micro.Name("test"),
 		micro.Transport(transport),
 		micro.Registry(registry),
 	)

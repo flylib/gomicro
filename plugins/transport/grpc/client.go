@@ -15,7 +15,7 @@ type client struct {
 }
 
 func (self client) Dial() error {
-	dial, err := grpc.Dial(self.opt.addres)
+	dial, err := grpc.Dial(self.opt.address)
 	if err != nil {
 		return err
 	}
