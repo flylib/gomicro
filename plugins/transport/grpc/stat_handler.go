@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/grpc/stats"
 	"log"
 )
@@ -12,7 +11,7 @@ type StatsHandler struct {
 
 //TagConn可以将一些信息附加到给定的上下文。
 func (h *StatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
-	fmt.Println("tagConn...")
+	log.Println("tagConn...", info.RemoteAddr)
 	return ctx
 }
 
@@ -25,14 +24,13 @@ func (h *StatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	case *stats.ConnEnd:
 		log.Printf("end conn")
 	default:
-		fmt.Println("handleConn...")
+		log.Println("handleConn...")
 	}
 }
 
 // TagRPC可以将一些信息附加到给定的上下文
-
 func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	fmt.Println("tagrpc...@" + info.FullMethodName)
+	log.Println("tagrpc...@" + info.FullMethodName)
 	return ctx
 }
 
@@ -40,20 +38,20 @@ func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) conte
 func (h *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	switch s.(type) {
 	case *stats.Begin:
-		fmt.Println("handlerRPC begin...")
+		log.Println("handlerRPC begin...")
 	case *stats.End:
-		fmt.Println("handlerRPC End...")
+		log.Println("handlerRPC End...")
 	case *stats.InHeader:
-		fmt.Println("handlerRPC InHeader...")
+		log.Println("handlerRPC InHeader...")
 	case *stats.InPayload:
-		fmt.Println("handlerRPC InPayload...")
+		log.Println("handlerRPC InPayload...")
 	case *stats.InTrailer:
-		fmt.Println("handlerRPC InTrailer...")
+		log.Println("handlerRPC InTrailer...")
 	case *stats.OutHeader:
-		fmt.Println("handlerRPC OutHeader...")
+		log.Println("handlerRPC OutHeader...")
 	case *stats.OutPayload:
-		fmt.Println("handlerRPC OutPayload...")
+		log.Println("handlerRPC OutPayload...")
 	default:
-		fmt.Println("handleRPC...")
+		log.Println("handleRPC...")
 	}
 }

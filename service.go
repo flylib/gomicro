@@ -1,5 +1,7 @@
 package micro
 
+import "log"
+
 /*
 +---------------------------------------------------+
 +				     service						+
@@ -12,6 +14,10 @@ package micro
 +---------------------------------------------------+
 */
 
+func init() {
+	log.SetPrefix("[micro]")
+	log.SetFlags(log.Llongfile | log.LstdFlags)
+}
 func NewService(opts ...OptionFun) Service {
 	opt := Option{}
 	for _, f := range opts {

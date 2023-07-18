@@ -2,12 +2,24 @@ package grpc
 
 type Option func(o *option)
 
+//type Register struct {
+//	registerFun interface{}
+//	handler     interface{}
+//}
+
 type option struct {
-	addres string
+	address          string
+	registerHandlers map[interface{}]interface{}
 }
 
-func Addres(addres string) Option {
+func Address(address string) Option {
 	return func(o *option) {
-		o.addres = addres
+		o.address = address
+	}
+}
+
+func M(registerFun, handler interface{}) Option {
+	return func(o *option) {
+		o.registerHandlers[handler] = registerFun
 	}
 }

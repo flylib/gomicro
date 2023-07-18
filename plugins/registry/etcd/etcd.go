@@ -9,6 +9,7 @@ import (
 	"github.com/zjllib/go-micro"
 	"github.com/zjllib/goutils/net"
 	"go.etcd.io/etcd/client/v3"
+	"log"
 	"strings"
 	"time"
 )
@@ -76,10 +77,10 @@ func (self *etcd) ListenLeaseRespChan() {
 		select {
 		case leaseKeepResp := <-self.keepAliveChan:
 			if leaseKeepResp == nil {
-				fmt.Printf("已经关闭续租功能\n")
+				log.Println("已经关闭续租功能")
 				return
 			} else {
-				fmt.Printf("续租成功\n")
+				log.Println("续租成功")
 			}
 		}
 	}
@@ -122,9 +123,9 @@ func (self *etcd) Deregister(service *micro.Service) error {
 }
 
 func (self *etcd) GetService(s string) ([]*micro.Service, error) {
-	panic("implement me")
+	return nil, nil
 }
 
 func (self *etcd) ListServices() ([]*micro.Service, error) {
-	panic("implement me")
+	return nil, nil
 }

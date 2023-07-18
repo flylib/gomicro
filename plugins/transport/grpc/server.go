@@ -4,6 +4,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
+	"reflect"
 )
 
 type server struct {
@@ -12,7 +13,7 @@ type server struct {
 }
 
 func (self *server) Start() error {
-	ln, err := net.Listen("tcp", self.opt.addres)
+	ln, err := net.Listen("tcp", self.opt.address)
 	if err != nil {
 		return err
 	}
@@ -28,7 +29,11 @@ func (self *server) Start() error {
 	 * user.RegisterLoginServer(s, &server{})
 	 * minMovie.RegisterFbiServer(s, &server{})
 	 */
-	// 在gRPC服务器上注册反射服务
+	for handler, f := range self.opt.registerHandlers {
+		reflect.ValueOf(f).Call([]reflect.Value{reflect.ValueOf(self.grpcServer), reflect.ValueOf(handler)})
+		//f(self.grpcServer)
+	}
+
 	reflection.Register(self.grpcServer)
 	// 将监听交给gRPC服务处理
 	err = self.grpcServer.Serve(ln)
@@ -41,5 +46,5 @@ func (self *server) Stop() error {
 }
 
 func (self *server) Addr() string {
-	return self.opt.addres
+	return self.opt.address
 }
