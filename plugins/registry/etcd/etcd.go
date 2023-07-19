@@ -103,7 +103,8 @@ func (self *etcd) Register(service *micro.Service) error {
 	}
 
 	node := micro.Node{
-		Name:    service.Name() + "-" + uuid.NewV4().String(),
+		//Name: service.Name(),
+		Name:    micro.RegistryPrefix + service.Name() + "-" + uuid.NewV4().String(),
 		Version: service.Version,
 		Address: addr,
 	}
@@ -111,7 +112,8 @@ func (self *etcd) Register(service *micro.Service) error {
 	if err != nil {
 		return err
 	}
-	_, err = kv.Put(context.TODO(), micro.RegistryPrefix+service.Option.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
+	log.Println(node.Name, " registry node info:", string(marshal))
+	_, err = kv.Put(context.TODO(), node.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
 	return err
 }
 

@@ -12,11 +12,11 @@ import (
 func main() {
 	registry := etcd.NewRegistry(
 		etcd.Address("127.0.0.1:2379"),
-		etcd.RegisterTTL(time.Second*5),
+		etcd.RegisterTTL(time.Second*15),
 	)
 
 	transport := grpc.NewTransport(
-		grpc.Address(":8090"),
+		grpc.Address(":8028"),
 		grpc.M(proto.RegisterWaiterServer, &handler.MD5Handler{}),
 	)
 

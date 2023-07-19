@@ -1,13 +1,11 @@
 package grpc
 
-import "sync"
+import (
+	"reflect"
+	"sync"
+)
 
 type Option func(o *option)
-
-//type Register struct {
-//	registerFun interface{}
-//	handler     interface{}
-//}
 
 type option struct {
 	address          string
@@ -20,8 +18,17 @@ func Address(address string) Option {
 	}
 }
 
-func M(registerFun, handler interface{}) Option {
+func M(register, handler interface{}) Option {
+
+	if reflect.TypeOf(register).Kind() != reflect.Func {
+		panic("register mut be a fun")
+	}
+
+	if reflect.TypeOf(handler).Kind() != reflect.Struct && reflect.TypeOf(handler).Kind() != reflect.Ptr {
+		panic("handler mut be a struct")
+	}
+
 	return func(o *option) {
-		o.registerHandlers.Store(handler, registerFun)
+		o.registerHandlers.Store(handler, register)
 	}
 }
