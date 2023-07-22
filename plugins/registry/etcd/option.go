@@ -5,29 +5,35 @@ import "time"
 type Option func(o *option)
 
 type option struct {
-	address []string
+	endpoints []string
 	// The register expiry time
-	registerttl time.Duration
+	registerTTL time.Duration
 	// The interval on which to register
-	registerinterval time.Duration
+	registerInterval time.Duration
+	// dialTimeout is the timeout for failing to establish a connection.
+	dialTimeout time.Duration
 }
 
-func Address(address ...string) Option {
+func Endpoints(endpoints ...string) Option {
 	return func(o *option) {
-		o.address = address
+		o.endpoints = endpoints
 	}
 }
 
-// Register the service with a TTL
 func RegisterTTL(t time.Duration) Option {
 	return func(o *option) {
-		o.registerttl = t
+		o.registerTTL = t
 	}
 }
 
-// Register the service with at interval
 func RegisterInterval(t time.Duration) Option {
 	return func(o *option) {
-		o.registerinterval = t
+		o.registerInterval = t
+	}
+}
+
+func DialTimeout(t time.Duration) Option {
+	return func(o *option) {
+		o.dialTimeout = t
 	}
 }

@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"github.com/zjllib/go-micro"
-	"github.com/zjllib/goutils/net"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	"go.etcd.io/etcd/client/v3"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -28,9 +26,13 @@ func NewRegistry(opts ...Option) micro.IRegistry {
 		o(&options)
 	}
 
+	if options.dialTimeout.Seconds() == 0 {
+		options.dialTimeout = 5 * time.Second
+	}
+
 	conf := clientv3.Config{
-		Endpoints:   options.address,
-		DialTimeout: 5 * time.Second,
+		Endpoints:   options.endpoints,
+		DialTimeout: options.dialTimeout,
 	}
 
 	c, err := clientv3.New(conf)
@@ -40,9 +42,66 @@ func NewRegistry(opts ...Option) micro.IRegistry {
 	registry := etcd{
 		client: c,
 	}
-	registry.setLease(int64(options.registerttl.Seconds()))
-	go registry.ListenLeaseRespChan()
+	err = registry.setLease(int64(options.registerTTL.Seconds()))
+	if err != nil {
+		panic(err)
+	}
+	go registry.listenLeaseRespChan()
 	return &registry
+}
+
+func (self *etcd) RegisterNode(node micro.Node) error {
+	marshal, err := json.Marshal(node)
+	if err != nil {
+		return err
+	}
+	log.Println(node.Name, " registry node info:", string(marshal))
+	_, err = self.client.Put(context.TODO(), node.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
+	return err
+}
+
+func (self *etcd) DeregisterNode(node micro.Node) error {
+	_, err := self.client.Delete(context.Background(), node.Name)
+	return err
+}
+
+func (self *etcd) GetNodes(prefix string) ([]micro.Node, error) {
+	result, err := self.client.Get(context.Background(), prefix, clientv3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+	var nodes []micro.Node
+	for _, item := range result.Kvs {
+		var node micro.Node
+		err = json.Unmarshal(item.Value, &node)
+		if err != nil {
+			return nil, err
+		}
+		nodes = append(nodes, node)
+	}
+	return nodes, nil
+}
+
+//watcher 监听前缀
+func (s *etcd) WatchNodes(prefix string, callback func(eventType micro.EventType, node micro.Node)) error {
+	watchChan := s.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
+	for resp := range watchChan {
+		if resp.Canceled {
+			return resp.Err()
+		}
+		for _, e := range resp.Events {
+			var node micro.Node
+			switch e.Type {
+			case mvccpb.PUT: //修改或者新增
+				json.Unmarshal(e.Kv.Value, &node)
+				callback(micro.Modify, node)
+			case mvccpb.DELETE: //删除
+				node.Name = string(e.Kv.Key)
+				callback(micro.Delete, node)
+			}
+		}
+	}
+	return errors.New(fmt.Sprintf("WatchChan-%s  close", prefix))
 }
 
 //设置租约
@@ -59,7 +118,6 @@ func (self *etcd) setLease(ttl int64) error {
 	//设置续租
 	ctx, cancelFunc := context.WithCancel(context.TODO())
 	leaseRespChan, err := lease.KeepAlive(ctx, leaseResp.ID)
-
 	if err != nil {
 		return err
 	}
@@ -72,62 +130,10 @@ func (self *etcd) setLease(ttl int64) error {
 }
 
 //监听 续租情况
-func (self *etcd) ListenLeaseRespChan() {
-	for {
-		select {
-		case leaseKeepResp := <-self.keepAliveChan:
-			if leaseKeepResp == nil {
-				log.Println("已经关闭续租功能")
-				return
-			} else {
-				log.Println("续租成功")
-			}
-		}
+func (self *etcd) listenLeaseRespChan() {
+	for rsp := range self.keepAliveChan {
+		log.Println("续租成功", rsp.ID)
 	}
-}
-
-func (self *etcd) Register(service *micro.Service) error {
-	kv := clientv3.NewKV(self.client)
-	addr := service.RegistryAddress
-	if addr == "" {
-		splits := strings.Split(service.ITransport.Server().Addr(), ":")
-		if len(splits) != 2 {
-			return errors.New("bad addr:" + addr)
-		}
-		//Get LAN address
-		ip, err := net.GetOutboundIP()
-		if err != nil {
-			return err
-		}
-		addr = ip.String() + ":" + splits[1]
-	}
-
-	node := micro.Node{
-		//Name: service.Name(),
-		Name:    micro.RegistryPrefix + service.Name() + "-" + uuid.NewV4().String(),
-		Version: service.Version,
-		Address: addr,
-	}
-	marshal, err := json.Marshal(node)
-	if err != nil {
-		return err
-	}
-	log.Println(node.Name, " registry node info:", string(marshal))
-	_, err = kv.Put(context.TODO(), node.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
-	return err
-}
-
-func (self *etcd) Deregister(service *micro.Service) error {
-	kv := clientv3.NewKV(self.client)
-	response, err := kv.Delete(context.Background(), service.Option.Name)
-	fmt.Println(*response)
-	return err
-}
-
-func (self *etcd) GetService(s string) ([]*micro.Service, error) {
-	return nil, nil
-}
-
-func (self *etcd) ListServices() ([]*micro.Service, error) {
-	return nil, nil
+	log.Println("已经关闭续租功能")
+	return
 }

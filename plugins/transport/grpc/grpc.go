@@ -26,3 +26,7 @@ func (self *grpcTransport) Server() micro.IServer {
 func (self *grpcTransport) Client() micro.IClient {
 	return self.c
 }
+
+func (self *grpcTransport) Type() string {
+	return "grpc"
+}

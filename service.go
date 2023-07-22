@@ -1,6 +1,12 @@
 package micro
 
-import "log"
+import (
+	"errors"
+	uuid "github.com/satori/go.uuid"
+	"github.com/zjllib/goutils/net"
+	"log"
+	"strings"
+)
 
 /*
 +---------------------------------------------------+
@@ -23,10 +29,6 @@ func NewService(opts ...OptionFun) Service {
 	for _, f := range opts {
 		f(&opt)
 	}
-
-	//if opt.Transport.ITransport != nil {
-	//	opt.Transport.Init(opts...)
-	//}
 	return Service{
 		opt,
 	}
@@ -41,7 +43,27 @@ func (self *Service) Name() string {
 }
 
 func (self *Service) Start() error {
-	err := self.IRegistry.Register(self)
+	addr := self.RegistryAddress
+	if addr == "" {
+		splits := strings.Split(self.ITransport.Server().Addr(), ":")
+		if len(splits) != 2 {
+			return errors.New("bad addr:" + addr)
+		}
+		//Get LAN address
+		ip, err := net.GetOutboundIP()
+		if err != nil {
+			return err
+		}
+		addr = ip.String() + ":" + splits[1]
+	}
+
+	node := Node{
+		Name:    RegistryPrefix + self.Name() + "-" + uuid.NewV4().String(),
+		Version: self.Version,
+		Address: addr,
+		Type:    self.ITransport.Type(),
+	}
+	err := self.IRegistry.RegisterNode(node)
 	if err != nil {
 		return err
 	}

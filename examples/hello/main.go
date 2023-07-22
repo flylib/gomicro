@@ -12,7 +12,7 @@ import (
 
 func main() {
 	registry := etcd.NewRegistry(
-		etcd.Address("127.0.0.1:2379"),
+		etcd.Endpoints("127.0.0.1:2379"),
 		etcd.RegisterTTL(time.Second*15),
 	)
 

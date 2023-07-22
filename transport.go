@@ -47,4 +47,5 @@ type ITransport interface {
 	//Init(...OptionFun) error
 	Server() IServer
 	Client() IClient
+	Type() string
 }
