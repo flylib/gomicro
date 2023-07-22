@@ -24,7 +24,8 @@ func M(register, handler interface{}) Option {
 		panic("register mut be a fun")
 	}
 
-	if reflect.TypeOf(handler).Kind() != reflect.Struct && reflect.TypeOf(handler).Kind() != reflect.Ptr {
+	if reflect.TypeOf(handler).Kind() != reflect.Struct &&
+		reflect.TypeOf(handler).Kind() != reflect.Ptr {
 		panic("handler mut be a struct")
 	}
 

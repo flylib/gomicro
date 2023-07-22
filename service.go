@@ -49,6 +49,5 @@ func (self *Service) Start() error {
 }
 
 func (self *Service) Stop() error {
-
 	return self.ITransport.Server().Stop()
 }

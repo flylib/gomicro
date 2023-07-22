@@ -6,6 +6,7 @@ import (
 	"github.com/zjllib/go-micro/plugins/transport/grpc"
 	"hello/handler"
 	"hello/proto"
+	"log"
 	"time"
 )
 
@@ -26,5 +27,8 @@ func main() {
 		micro.Registry(registry),
 	)
 
-	service.Start()
+	err := service.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

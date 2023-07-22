@@ -1,6 +1,9 @@
 package micro
 
-import "net"
+import (
+	"context"
+	"net"
+)
 
 /*
 +---------------------------------------------------+
@@ -27,6 +30,7 @@ type ISession interface {
 //客户端
 type IClient interface {
 	Dial() error
+	Call(ctx context.Context, method string, in, out interface{}) error
 }
 
 //服务端
