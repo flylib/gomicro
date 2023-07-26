@@ -21,6 +21,8 @@ type Node struct {
 	Address  string                 `json:"address"`
 	Type     string                 `json:"type"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
+
+	clients []IClient
 }
 
 const RegistryPrefix = "micro/nodes/"

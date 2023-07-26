@@ -30,13 +30,15 @@ type ISession interface {
 //客户端
 type IClient interface {
 	Dial() error
+	DialNode(Node) error
+	Close() error
 	Call(ctx context.Context, method string, in, out interface{}) error
 }
 
 //服务端
 type IServer interface {
 	// 启动监听
-	Start() error
+	Listen() error
 	// 停止服务
 	Stop() error
 	// 地址

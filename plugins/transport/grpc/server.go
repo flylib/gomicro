@@ -12,7 +12,7 @@ type server struct {
 	grpcServer *grpc.Server
 }
 
-func (self *server) Start() error {
+func (self *server) Listen() error {
 	ln, err := net.Listen("tcp", self.opt.address)
 	if err != nil {
 		return err

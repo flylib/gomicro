@@ -5,8 +5,9 @@ import (
 )
 
 type grpcTransport struct {
-	s *server
-	c *client
+	opt option
+	s   *server
+	//c *client
 }
 
 func NewTransport(opts ...Option) micro.ITransport {
@@ -15,8 +16,10 @@ func NewTransport(opts ...Option) micro.ITransport {
 		o(&options)
 	}
 	s := &server{opt: options}
-	c := &client{opt: options}
-	return &grpcTransport{s, c}
+	//c := &client{opt: options}
+	return &grpcTransport{
+		opt: options,
+		s:   s}
 }
 
 func (self *grpcTransport) Server() micro.IServer {
@@ -24,7 +27,9 @@ func (self *grpcTransport) Server() micro.IServer {
 }
 
 func (self *grpcTransport) Client() micro.IClient {
-	return self.c
+	return &client{
+		opt: self.opt,
+	}
 }
 
 func (self *grpcTransport) Type() string {
