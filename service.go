@@ -16,9 +16,7 @@ import (
 +---------------------------------------------------+
 +		server			|		client				+
 +---------------------------------------------------+
-+		registry,bee worker、conn pool、codec		+
-+---------------------------------------------------+
-+		transport(udp、tcp、ws、quic、rpc)			+
++		registry,transport(udp、tcp、ws、quic、rpc)、codec+
 +---------------------------------------------------+
 */
 
@@ -26,6 +24,7 @@ func init() {
 	log.SetPrefix("[micro]")
 	log.SetFlags(log.Llongfile | log.LstdFlags)
 }
+
 func NewService(opts ...OptionFun) Service {
 	opt := Option{}
 	for _, f := range opts {
@@ -98,6 +97,58 @@ func (self *Service) Call(ctx context.Context, method string, in, out interface{
 		self.nodes = nodes
 
 		go self.IRegistry.WatchNodes(RegistryPrefix+self.Name(), func(eventType EventType, node Node) {
+			switch eventType {
+			case Delete:
+				for i := 0; i < len(self.nodes); i++ {
+					if self.nodes[i].Name == node.Name {
+						for _, client := range self.nodes[i].clients {
+							client.Close()
+						}
+						self.nodes = append(self.nodes[:i], self.nodes[i+1:]...)
+					}
+				}
+			case Modify:
+
+			}
+		})
+	})
+
+	return self.nodes[0].clients[0].Call(ctx, method, in, out)
+}
+
+func (self *Service) Client(serviceName string) *Client {
+	return &Client{
+		serviceName: serviceName,
+		Option:      self.Option,
+	}
+}
+
+type Client struct {
+	Option
+	serviceName string
+	nodes       []Node
+	sync.Once
+}
+
+func (self *Client) Call(ctx context.Context, method string, in, out interface{}) (err error) {
+	self.Once.Do(func() {
+		var nodes []Node
+		nodes, err = self.IRegistry.GetNodes(RegistryPrefix + self.serviceName)
+		if err != nil {
+			return
+		}
+		//connect all service
+		for i := 0; i < len(nodes); i++ {
+			cli := self.ITransport.Client()
+			err = cli.DialNode(nodes[i])
+			if err != nil {
+				return
+			}
+			nodes[i].clients = append(nodes[i].clients, cli)
+		}
+		self.nodes = nodes
+
+		go self.IRegistry.WatchNodes(RegistryPrefix+self.serviceName, func(eventType EventType, node Node) {
 			switch eventType {
 			case Delete:
 				for i := 0; i < len(self.nodes); i++ {
