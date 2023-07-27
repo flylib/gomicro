@@ -42,11 +42,14 @@ func NewRegistry(opts ...Option) micro.IRegistry {
 	registry := etcd{
 		client: c,
 	}
-	err = registry.setLease(int64(options.registerTTL.Seconds()))
-	if err != nil {
-		panic(err)
+	if options.registerTTL.Seconds() != 0 {
+		err = registry.setLease(int64(options.registerTTL.Seconds()))
+		if err != nil {
+			panic(err)
+		}
+		go registry.listenLeaseRespChan()
 	}
-	go registry.listenLeaseRespChan()
+
 	return &registry
 }
 

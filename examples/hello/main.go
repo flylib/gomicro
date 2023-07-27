@@ -25,6 +25,7 @@ func main() {
 		micro.Name("test"),
 		micro.Transport(transport),
 		micro.Registry(registry),
+		micro.RegistryAddress("127.0.0.1:8028"),
 	)
 
 	err := service.Start()

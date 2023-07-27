@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/zjllib/go-micro"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type client struct {
@@ -13,7 +14,7 @@ type client struct {
 }
 
 func (self *client) Dial() error {
-	conn, err := grpc.Dial(self.opt.address)
+	conn, err := grpc.Dial(self.opt.address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
@@ -22,7 +23,7 @@ func (self *client) Dial() error {
 }
 
 func (self *client) DialNode(node micro.Node) error {
-	conn, err := grpc.Dial(node.Address)
+	conn, err := grpc.Dial(node.Address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
