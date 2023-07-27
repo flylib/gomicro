@@ -30,10 +30,10 @@ import (
 
 const (
 	contextPackage = protogen.GoImportPath("context")
-	//grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
-	grpcPackage   = protogen.GoImportPath("github.com/zjllib/go-micro")
-	codesPackage  = protogen.GoImportPath("google.golang.org/grpc/codes")
-	statusPackage = protogen.GoImportPath("google.golang.org/grpc/status")
+	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
+	microPackage   = protogen.GoImportPath("github.com/zjllib/go-micro")
+	codesPackage   = protogen.GoImportPath("google.golang.org/grpc/codes")
+	statusPackage  = protogen.GoImportPath("google.golang.org/grpc/status")
 )
 
 type serviceGenerateHelperInterface interface {
@@ -65,7 +65,7 @@ func (serviceGenerateHelper) genFullMethods(g *protogen.GeneratedFile, service *
 
 func (serviceGenerateHelper) generateClientStruct(g *protogen.GeneratedFile, clientName string) {
 	g.P("type ", unexport(clientName), " struct {")
-	g.P("cc *", grpcPackage.Ident("Client"))
+	g.P("cc *", microPackage.Ident("Client"))
 	g.P("}")
 	g.P()
 }
@@ -214,7 +214,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	if service.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated() {
 		g.P(deprecationComment)
 	}
-	g.P("func New", clientName, " (cc *", grpcPackage.Ident("Client"), ") ", clientName, " {")
+	g.P("func New", clientName, " (cc *", microPackage.Ident("Client"), ") ", clientName, " {")
 	helper.generateNewClientDefinitions(g, service, clientName)
 	g.P("}")
 	g.P()
@@ -292,7 +292,8 @@ func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	if !method.Desc.IsStreamingClient() {
 		s += ", in *" + g.QualifiedGoIdent(method.Input.GoIdent)
 	}
-	s += ", opts ..." + g.QualifiedGoIdent(grpcPackage.Ident("CallOption")) + ") ("
+	//s += ", opts ..." + g.QualifiedGoIdent(grpcPackage.Ident("CallOption")) + ") ("
+	s += ") ("
 	if !method.Desc.IsStreamingClient() && !method.Desc.IsStreamingServer() {
 		s += "*" + g.QualifiedGoIdent(method.Output.GoIdent)
 	} else {
@@ -312,7 +313,7 @@ func genClientMethod(gen *protogen.Plugin, file *protogen.File, g *protogen.Gene
 	g.P("func (c *", unexport(service.GoName), "Client) ", clientSignature(g, method), "{")
 	if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
 		g.P("out := new(", method.Output.GoIdent, ")")
-		g.P(`err := c.cc.Call(ctx, `, fmSymbol, `, in, out, opts...)`)
+		g.P(`err := c.cc.Call(ctx, `, fmSymbol, `, in, out)`)
 		g.P("if err != nil { return nil, err }")
 		g.P("return out, nil")
 		g.P("}")

@@ -164,6 +164,9 @@ func (self *Client) Call(ctx context.Context, method string, in, out interface{}
 			}
 		})
 	})
+	if err != nil {
+		return err
+	}
 
 	return self.nodes[0].clients[0].Call(ctx, method, in, out)
 }

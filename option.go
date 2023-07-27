@@ -1,6 +1,9 @@
 package micro
 
+import "time"
+
 type OptionFun func(o *Option)
+type CallOptionFun func(o *CallCallOption)
 
 //options
 type (
@@ -14,6 +17,14 @@ type (
 
 		IRegistry
 		ITransport
+	}
+
+	CallCallOption struct {
+		ServiceName string
+		// Number of Call attempts
+		Retries int
+		// Request/Response timeout
+		RequestTimeout time.Duration
 	}
 )
 

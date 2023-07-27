@@ -1,6 +1,8 @@
 syntax = "proto3";
 //https://blog.csdn.net/u014308482/article/details/52958148 Protobuf语言指南——.proto文件语法详解
 //然后将proto文件编译为go文件 protoc --go_out=plugins=grpc:./ ./test.proto
+
+option go_package = "google.golang.org/grpc/proto";
 // 定义包名
 package proto;
 
