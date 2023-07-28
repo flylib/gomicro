@@ -20,7 +20,10 @@ func main() {
 		micro.Registry(registry),
 	)
 
-	client := service.NewClient(micro.CallService("test"))
+	client, err := service.NewClient(micro.CallTarget("test"))
+	if err != nil {
+		panic(err)
+	}
 
 	waiterService := proto.NewWaiterClient(client)
 

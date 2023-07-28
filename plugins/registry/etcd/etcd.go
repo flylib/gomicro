@@ -68,19 +68,19 @@ func (self *etcd) DeregisterNode(node micro.Node) error {
 	return err
 }
 
-func (self *etcd) GetNodes(prefix string) ([]micro.Node, error) {
+func (self *etcd) GetNodes(prefix string) ([]*micro.Node, error) {
 	result, err := self.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}
-	var nodes []micro.Node
+	var nodes []*micro.Node
 	for _, item := range result.Kvs {
 		var node micro.Node
 		err = json.Unmarshal(item.Value, &node)
 		if err != nil {
 			return nil, err
 		}
-		nodes = append(nodes, node)
+		nodes = append(nodes, &node)
 	}
 	return nodes, nil
 }

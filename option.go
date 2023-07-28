@@ -54,9 +54,11 @@ type CallOption struct {
 	retries int
 	// Request/Response timeout
 	requestTimeout time.Duration
+
+	ISelector
 }
 
-func CallService(serviceName string) CallOptionFun {
+func CallTarget(serviceName string) CallOptionFun {
 	return func(o *CallOption) {
 		o.serviceName = serviceName
 	}
@@ -67,6 +69,7 @@ func CallRetries(retries int) CallOptionFun {
 		o.retries = retries
 	}
 }
+
 func CallTimeout(requestTimeout time.Duration) CallOptionFun {
 	return func(o *CallOption) {
 		o.requestTimeout = requestTimeout

@@ -3,7 +3,7 @@ package micro
 type IRegistry interface {
 	RegisterNode(node Node) error
 	DeregisterNode(node Node) error
-	GetNodes(string) ([]Node, error)
+	GetNodes(string) ([]*Node, error)
 	WatchNodes(path string, callback func(eventType EventType, node Node)) error
 }
 
@@ -22,7 +22,7 @@ type Node struct {
 	Type     string                 `json:"type"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 
-	clients []IClient
+	cli IClient
 }
 
 const RegistryPrefix = "micro/nodes/"
