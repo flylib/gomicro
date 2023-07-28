@@ -6,22 +6,22 @@ type ISelector interface {
 	Remove(Node)
 }
 
-type defaultSelector struct {
+type singleSelector struct {
 	node *Node
 }
 
-func (self *defaultSelector) Init(nodes []*Node) {
+func (self *singleSelector) Init(nodes []*Node) {
 	if len(nodes) == 0 {
 		panic("The length of nodes must be greater than 0")
 	}
 	self.node = nodes[0]
 }
 
-func (self *defaultSelector) Next() *Node {
+func (self *singleSelector) Next() *Node {
 	return self.node
 }
 
-func (self *defaultSelector) Remove(node Node) {
+func (self *singleSelector) Remove(node Node) {
 	if node.Name == self.node.Name {
 		self.node = nil
 	}
