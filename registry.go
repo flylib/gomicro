@@ -4,7 +4,7 @@ type IRegistry interface {
 	RegisterNode(node Node) error
 	DeregisterNode(node Node) error
 	GetNodes(string) ([]Node, error)
-	WatchNodes(prefix string, callback func(eventType EventType, node Node)) error
+	WatchNodes(path string, callback func(eventType EventType, node Node)) error
 }
 
 type EventType string

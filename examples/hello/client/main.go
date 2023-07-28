@@ -12,21 +12,15 @@ import (
 func main() {
 	registry := etcd.NewRegistry(
 		etcd.Endpoints("127.0.0.1:2379"),
-		//etcd.RegisterTTL(time.Second*15),
-	)
-
-	transport := grpc.NewTransport(
-	//grpc.Address(":8028"),
-	//grpc.M(proto.RegisterWaiterServer, &handler.MD5Handler{}),
 	)
 
 	service := micro.NewService(
 		micro.Name("test"),
-		micro.Transport(transport),
+		micro.Transport(grpc.NewTransport()),
 		micro.Registry(registry),
 	)
 
-	client := service.Client("test")
+	client := service.NewClient(micro.CallService("test"))
 
 	waiterService := proto.NewWaiterClient(client)
 

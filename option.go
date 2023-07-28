@@ -3,30 +3,20 @@ package micro
 import "time"
 
 type OptionFun func(o *Option)
-type CallOptionFun func(o *CallCallOption)
+type CallOptionFun func(o *CallOption)
 
 //options
-type (
-	Option struct {
-		//service name
-		Name string
-		//Version
-		Version string
-		//Registered address, used to distinguish container ip and LAN ip
-		RegistryAddress string
+type Option struct {
+	//service name
+	Name string
+	//Version
+	Version string
+	//Registered address, used to distinguish container ip and LAN ip
+	RegistryAddress string
 
-		IRegistry
-		ITransport
-	}
-
-	CallCallOption struct {
-		ServiceName string
-		// Number of Call attempts
-		Retries int
-		// Request/Response timeout
-		RequestTimeout time.Duration
-	}
-)
+	IRegistry
+	ITransport
+}
 
 func Name(name string) OptionFun {
 	return func(o *Option) {
@@ -55,5 +45,30 @@ func Transport(transport ITransport) OptionFun {
 func Registry(registry IRegistry) OptionFun {
 	return func(o *Option) {
 		o.IRegistry = registry
+	}
+}
+
+type CallOption struct {
+	serviceName string
+	// Number of Call attempts
+	retries int
+	// Request/Response timeout
+	requestTimeout time.Duration
+}
+
+func CallService(serviceName string) CallOptionFun {
+	return func(o *CallOption) {
+		o.serviceName = serviceName
+	}
+}
+
+func CallRetries(retries int) CallOptionFun {
+	return func(o *CallOption) {
+		o.retries = retries
+	}
+}
+func CallTimeout(requestTimeout time.Duration) CallOptionFun {
+	return func(o *CallOption) {
+		o.requestTimeout = requestTimeout
 	}
 }

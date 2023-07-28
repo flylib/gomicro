@@ -58,7 +58,7 @@ func (self *etcd) RegisterNode(node micro.Node) error {
 	if err != nil {
 		return err
 	}
-	log.Println(node.Name, " registry node info:", string(marshal))
+	log.Println(node.Name, " registry node info:\n", string(marshal))
 	_, err = self.client.Put(context.TODO(), node.Name, string(marshal), clientv3.WithLease(self.leaseResp.ID))
 	return err
 }
@@ -86,8 +86,8 @@ func (self *etcd) GetNodes(prefix string) ([]micro.Node, error) {
 }
 
 //watcher 监听前缀
-func (s *etcd) WatchNodes(prefix string, callback func(eventType micro.EventType, node micro.Node)) error {
-	watchChan := s.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
+func (s *etcd) WatchNodes(path string, callback func(eventType micro.EventType, node micro.Node)) error {
+	watchChan := s.client.Watch(context.Background(), path, clientv3.WithPrefix())
 	for resp := range watchChan {
 		if resp.Canceled {
 			return resp.Err()
@@ -104,7 +104,7 @@ func (s *etcd) WatchNodes(prefix string, callback func(eventType micro.EventType
 			}
 		}
 	}
-	return errors.New(fmt.Sprintf("WatchChan-%s  close", prefix))
+	return errors.New(fmt.Sprintf("WatchChan-%s  close", path))
 }
 
 //设置租约
