@@ -4,9 +4,8 @@ Go Micro is a framework for distributed systems development.
 
 ## Overview
 
-Go Micro provides the core requirements for distributed systems development including RPC and Event driven communication. 
-The **Micro** philosophy is sane defaults with a pluggable architecture. We provide defaults to get you started quickly 
-but everything can be easily swapped out. 
+框架实现思想与go-micro v3版本保持一致，并在此基础上全部实现重写，与go-micro实现上两套不同微服框架，重写的初心就是在根据实际经验中筛选实用的组件进行精简，解决
+原本go-micro自身的一些问题，比如服务并不能实时的动态更新节点以至于服务发现不及时的问题，容器的部署上对网络支持比不友好等问题
 
 ## Features
 
@@ -45,48 +44,3 @@ leadership are built in as a Sync interface. When using an eventually consistent
 
 - **Pluggable Interfaces** - Go Micro makes use of Go interfaces for each distributed system abstraction. Because of this these interfaces 
 are pluggable and allows Go Micro to be runtime agnostic. You can plugin any underlying technology.
-
-## Getting Started
-
-To make use of Go Micro
-
-```golang
-import "github.com/zjllib/go-micro"
-
-// create a new service
-service := micro.NewService(
-    micro.Name("helloworld"),
-)
-
-// initialise flags
-service.Init()
-
-// start the service
-service.Run()
-```
-
-See the [examples](https://github.com/micro/go-micro/tree/master/examples) for detailed information on usage.
-
-## Command Line Interface
-
-See [cmd/gomu](https://github.com/zjllib/go-micro/tree/master/cmd/gomu) for the command line interface.
-
-## Code Generation
-
-See [cmd/protoc-gen-micro](https://github.com/micro/go-micro/tree/master/cmd/protoc-gen-micro) for protobuf code generation.
-
-## Example Usage
-
-See [examples](https://github.com/micro/go-micro/tree/master/examples) directory for usage examples.
-
-## Plugins
-
-See [plugins](https://github.com/micro/go-micro/tree/master/plugins) directory for all the plugins.
-
-## Services
-
-See [services](https://github.com/micro/go-micro/tree/master/services) directory for third party services.
-
-## License
-
-Go Micro is Apache 2.0 licensed.
