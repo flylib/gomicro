@@ -4,7 +4,7 @@ Go Micro is a framework for distributed systems development.
 
 ## Overview
 
-框架实现思想与go-micro v3版本保持一致，并在此基础上全部实现重写，与go-micro实现上两套不同微服框架，重写的初心就是在根据实际经验中筛选实用的组件进行精简，解决
+框架实现思想与go-micro v3版本保持一致，并在此基础上全部实现重写，但与go-micro实现上是两套不同微服框架，重写的初心就是在根据实际经验中筛选实用的组件进行精简，解决
 原本go-micro自身的一些问题，比如服务并不能实时的动态更新节点以至于服务发现不及时的问题，容器的部署上对网络支持比不友好等问题
 
 ## Features
