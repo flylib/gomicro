@@ -1,4 +1,4 @@
-module github.com/zjllib/go-micro/cmd/protoc-gen-go-grpc
+module github.com/zjllib/go-micro/cmd/protoc-gen-micro
 
 go 1.17
 

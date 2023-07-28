@@ -129,7 +129,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	if len(file.Services) == 0 {
 		return nil
 	}
-	filename := file.GeneratedFilenamePrefix + "_grpc.pb.go"
+	filename := file.GeneratedFilenamePrefix + ".micro.pb.go"
 	g := gen.NewGeneratedFile(filename, file.GoImportPath)
 	// Attach all comments associated with the syntax field.
 	genLeadingComments(g, file.Desc.SourceLocations().ByPath(protoreflect.SourcePath{fileDescriptorProtoSyntaxFieldNumber}))
